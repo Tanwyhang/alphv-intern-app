@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { Label, Pie, PieChart, Tooltip } from 'recharts'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 
 type Entry = {
   shape: string
@@ -10,7 +10,7 @@ type Entry = {
 }
 
 export function ShapesChart({ entries }: { entries: Entry[] }) {
-  const shapeColorMap: Record<string, number> = {
+  const shapeColorMap: Record<string, number> = React.useMemo(() => ({
     box: 1,
     circle: 2,
     cone: 3,
@@ -19,7 +19,7 @@ export function ShapesChart({ entries }: { entries: Entry[] }) {
     diamond: 6,
     heart: 7,
     hexagon: 8,
-  }
+  }), [])
 
   const chartData = React.useMemo(() => {
     const shapeCounts = entries.reduce((acc, entry) => {
@@ -32,7 +32,7 @@ export function ShapesChart({ entries }: { entries: Entry[] }) {
       count,
       fill: `var(--chart-${shapeColorMap[shape] || 1})`,
     }))
-  }, [entries])
+  }, [entries, shapeColorMap])
 
   const totalShapes = React.useMemo(() => {
     return entries.length

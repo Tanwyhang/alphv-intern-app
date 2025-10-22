@@ -8,7 +8,6 @@ import { signInWithGoogle } from "@/app/login/google-actions"
 import { signInWithGithub } from "@/app/login/github-actions"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-import { Loader2 } from "lucide-react"
 
 export function LoginForm({
   className,
@@ -40,6 +39,7 @@ export function LoginForm({
     }, 50)
 
     return () => clearInterval(interval)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [typewriterKey])
 
   const triggerTypewriter = () => {

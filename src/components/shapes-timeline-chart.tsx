@@ -31,7 +31,7 @@ export function ShapesTimelineChart({ entries }: { entries: Entry[] }) {
     const data = sorted.map((entry, index) => {
       shapeCounts[entry.shape] = (shapeCounts[entry.shape] || 0) + 1
       shapes.add(entry.shape)
-      const point: any = {
+      const point: Record<string, string | number> = {
         date: new Date(entry.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
         index,
       }
@@ -54,7 +54,7 @@ export function ShapesTimelineChart({ entries }: { entries: Entry[] }) {
         <ChartContainer config={chartConfig}>
           <LineChart data={chartData} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
-            <XAxis dataKey="index" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => chartData[value]?.date || ''} />
+            <XAxis dataKey="index" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(value) => String(chartData[value]?.date || '')} />
             <YAxis tickLine={false} axisLine={false} />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             {activeShapes.map((shape) => (

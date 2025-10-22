@@ -27,6 +27,12 @@ export default function AdminPage() {
   const [editingEntry, setEditingEntry] = useState<Entry | null>(null)
   const supabase = createClient()
 
+  async function loadEntries() {
+    const { data } = await supabase.from('entries').select('*').order('created_at', { ascending: false })
+    if (data) setEntries(data)
+    setLoading(false)
+  }
+
   useEffect(() => {
     loadEntries()
     
@@ -40,13 +46,8 @@ export default function AdminPage() {
     return () => {
       supabase.removeChannel(channel)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  async function loadEntries() {
-    const { data } = await supabase.from('entries').select('*').order('created_at', { ascending: false })
-    if (data) setEntries(data)
-    setLoading(false)
-  }
 
   async function handleSave(data: { name: string; shape: string; color: string }) {
     const { data: { user } } = await supabase.auth.getUser()

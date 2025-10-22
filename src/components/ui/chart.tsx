@@ -8,9 +8,9 @@ const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     config: Record<string, { label: string; color: string }>
-    children: React.ComponentElement<any, any>
+    children: React.ReactElement
   }
->(({ id, className, children, config, ...props }, ref) => {
+>(({ className, children, ...props }, ref) => {
   return (
     <div ref={ref} className={cn("flex aspect-video justify-center text-xs", className)} {...props}>
       <RechartsPrimitive.ResponsiveContainer width="100%" height="100%">
@@ -23,11 +23,22 @@ ChartContainer.displayName = "ChartContainer"
 
 const ChartTooltip = RechartsPrimitive.Tooltip
 
+interface ChartTooltipContentProps {
+  active?: boolean
+  payload?: Array<{
+    name: string
+    value: number | string
+    color: string
+    dataKey: string
+    payload: Record<string, unknown>
+  }>
+  label?: string
+  hideLabel?: boolean
+}
+
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
-    hideLabel?: boolean
-  }
+  ChartTooltipContentProps
 >(({ active, payload, label, hideLabel }, ref) => {
   if (!active || !payload?.length) return null
 
@@ -35,7 +46,7 @@ const ChartTooltipContent = React.forwardRef<
     <div ref={ref} className="rounded-lg border bg-background p-2 shadow-sm">
       {!hideLabel && <div className="font-medium mb-1">{label}</div>}
       <div className="grid gap-1">
-        {payload.map((item: any, index: number) => (
+        {payload.map((item, index) => (
           <div key={index} className="flex items-center gap-2">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.color }} />
             <span className="text-muted-foreground">{item.name}:</span>

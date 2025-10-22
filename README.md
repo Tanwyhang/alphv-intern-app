@@ -2,62 +2,61 @@
 
 A modern, full-stack web application for managing colored geometric shapes with role-based access control, real-time updates, and interactive data visualizations.
 
-## 📸 Screenshots
-
-> **Note**: Add your screenshots to the `docs/screenshots/` directory
+## Screenshots
 
 ### Login Page
-![Login Page](./docs/screenshots/login.png)
-*Google OAuth authentication with clean, modern UI*
+![Login Page](./docs/screenshots/login.webp)
+*Google and Github OAuth authentication with clean, modern UI*
 
 ### Admin Dashboard
 ![Admin Dashboard](./docs/screenshots/admin-dashboard.png)
+![Admin Dashboard](./docs/screenshots/admin-dashboard2.png)
 *Full CRUD operations with real-time synchronization*
 
 ### User Dashboard
 ![User Dashboard](./docs/screenshots/user-dashboard.png)
 *Read-only view with live updates and interactive charts*
 
-### Data Visualizations
-![Shape Charts](./docs/screenshots/charts.png)
-*Bar charts and timeline visualizations of shape data*
-
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                        Next.js 15 App                            │
-│                   (App Router + Server Components)               │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│  ┌────────────┐    ┌──────────────┐    ┌──────────────┐       │
-│  │   Login    │    │    Admin     │    │     User     │       │
-│  │   /login   │───▶│   /admin     │    │    /user     │       │
-│  └────────────┘    └──────────────┘    └──────────────┘       │
-│        │                   │                    │               │
-│        └───────────────────┴────────────────────┘               │
-│                            │                                    │
-│                    ┌───────▼────────┐                          │
-│                    │  API Routes    │                          │
-│                    │  /api/auth/*   │                          │
-│                    │  /auth/*       │                          │
-│                    └───────┬────────┘                          │
-│                            │                                    │
-├────────────────────────────┼────────────────────────────────────┤
-│                   Supabase Client Layer                         │
-│              (Authentication + Database + Realtime)             │
-└────────────────────────────┼────────────────────────────────────┘
-                             │
-                    ┌────────▼──────────┐
-                    │   Supabase BaaS   │
-                    ├───────────────────┤
-                    │  PostgreSQL DB    │
-                    │  Auth Service     │
-                    │  Realtime Engine  │
-                    │  Row Level Sec.   │
-                    └───────────────────┘
+### System Architecture
+
+```mermaid
+graph TB
+    subgraph "Client Tier"
+        Browser[Web Browser]
+    end
+    
+    subgraph "Next.js 15 Application"
+        Login[Login Page<br/>/login]
+        Admin[Admin Dashboard<br/>/admin]
+        User[User Dashboard<br/>/user]
+        API[API Routes<br/>/api/auth/*<br/>/auth/*]
+    end
+    
+    subgraph "Supabase BaaS"
+        Auth[Auth Service<br/>GoTrue]
+        DB[(PostgreSQL<br/>Database)]
+        Realtime[Realtime Engine<br/>WebSockets]
+        RLS[Row Level<br/>Security]
+    end
+    
+    Browser --> Login
+    Browser --> Admin
+    Browser --> User
+    Login --> API
+    Admin --> API
+    User --> API
+    
+    API --> Auth
+    API --> DB
+    API --> Realtime
+    
+    DB --> RLS
+    Auth -.Session.-> DB
+    Realtime -.Broadcast.-> DB
 ```
 
 ### Application Flow
@@ -70,7 +69,7 @@ graph TD
     D -->|Admin| E[Redirect to /admin]
     D -->|User| F[Redirect to /user]
     
-    C --> G[Google OAuth Login]
+    C --> G[Google/GitHub OAuth]
     G --> H[Auth Callback]
     H --> I[Create Profile]
     I --> D
@@ -86,7 +85,7 @@ graph TD
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 ### Frontend
 | Technology | Version | Purpose |
@@ -95,10 +94,12 @@ graph TD
 | **React** | 19.1.0 | UI library with concurrent features |
 | **TypeScript** | 5.x | Type-safe development |
 | **Tailwind CSS** | 4.x | Utility-first styling framework |
-| **Radix UI** | Various | Accessible, unstyled component primitives |
-| **Recharts** | 3.3.0 | Composable charting library |
-| **Lucide React** | 0.546.0 | Icon library |
-| **date-fns** | 4.1.0 | Date manipulation library |
+| **Shadcn/ui** | Latest | Re-usable components built with Radix UI and Tailwind CSS |
+| **Radix UI** | Various | Accessible, unstyled component primitives (via Shadcn/ui) |
+| **Recharts** | 3.3.0 | Composable charting library for data visualization |
+| **Lucide React** | 0.546.0 | Beautiful & consistent icon library |
+| **date-fns** | 4.1.0 | Modern JavaScript date utility library |
+| **Sonner** | 2.0.7 | Toast notification system |
 
 ### Backend & Services
 | Technology | Purpose |
@@ -114,7 +115,7 @@ graph TD
 - **Turbopack** - Fast bundler for development
 ---
 
-## 📊 Database Schema
+## Database Schema
 
 ```sql
 -- Users table (managed by Supabase Auth)
@@ -171,39 +172,39 @@ CREATE POLICY "Only admins can modify entries"
 
 ---
 
-## 🎯 Features
+## Features
 
 ### Authentication & Authorization
-- ✅ **Google OAuth 2.0** - Secure, passwordless authentication
-- ✅ **Role-Based Access Control (RBAC)** - Admin vs User permissions
-- ✅ **Automatic Role Assignment** - Default "user" role on signup
-- ✅ **Server-Side Auth** - Secure session management with cookies
-- ✅ **Protected Routes** - Layout-based auth guards
+- **Google OAuth 2.0** - Secure, passwordless authentication
+- **Role-Based Access Control (RBAC)** - Admin vs User permissions
+- **Automatic Role Assignment** - Default "user" role on signup
+- **Server-Side Auth** - Secure session management with cookies
+- **Protected Routes** - Layout-based auth guards
 
 ### Data Management
-- ✅ **CRUD Operations** - Create, Read, Update, Delete entries (Admin only)
-- ✅ **Real-Time Sync** - Live updates across all connected clients
-- ✅ **Data Validation** - Type-safe forms with client-side validation
-- ✅ **Optimistic Updates** - Instant UI feedback
-- ✅ **Automatic Timestamps** - Server-managed creation dates
+- **CRUD Operations** - Create, Read, Update, Delete entries (Admin only)
+- **Real-Time Sync** - Live updates across all connected clients
+- **Data Validation** - Type-safe forms with client-side validation
+- **Optimistic Updates** - Instant UI feedback
+- **Automatic Timestamps** - Server-managed creation dates
 
 ### User Interface
-- ✅ **Responsive Design** - Mobile-first, works on all screen sizes
-- ✅ **Dark Mode Support** - System preference detection
-- ✅ **Accessible Components** - ARIA labels, keyboard navigation
-- ✅ **Loading States** - Skeleton loaders and spinners
-- ✅ **Empty States** - Helpful messaging for empty data
-- ✅ **Toast Notifications** - Success/error feedback
+- **Responsive Design** - Mobile-first, works on all screen sizes
+- **Dark Mode Support** - System preference detection
+- **Accessible Components** - ARIA labels, keyboard navigation
+- **Loading States** - Skeleton loaders and spinners
+- **Empty States** - Helpful messaging for empty data
+- **Toast Notifications** - Success/error feedback
 
 ### Data Visualization
-- ✅ **Bar Charts** - Shape distribution by type
-- ✅ **Timeline Charts** - Entry creation over time
-- ✅ **Color-Coded Icons** - Visual shape representation
-- ✅ **Interactive Tables** - Sortable, filterable data views
+- **Bar Charts** - Shape distribution by type
+- **Timeline Charts** - Entry creation over time
+- **Color-Coded Icons** - Visual shape representation
+- **Interactive Tables** - Sortable, filterable data views
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 alphv-intern-app/
@@ -285,7 +286,7 @@ alphv-intern-app/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -297,7 +298,7 @@ alphv-intern-app/
 ### 1. Clone the Repository
 
 ```bash
-git clone <repository-url>
+git clone https://github.com/Tanwyhang/alphv-intern-app.git
 cd alphv-intern-app
 ```
 
@@ -350,7 +351,7 @@ GOOGLE_CLIENT_SECRET=your-google-client-secret
 
 ### 5. Set Up Google OAuth
 
-See [`SETUP.md`](./SETUP.md) for detailed Google OAuth configuration instructions.
+See [`SETUP.md`](./docs/SETUP.md) for detailed Google OAuth configuration instructions.
 
 **Quick steps:**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
@@ -382,7 +383,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 📖 Usage Guide
+## Usage Guide
 
 ### For Admins
 
@@ -422,7 +423,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🏛️ Architecture Deep Dive
+## Architecture Deep Dive
 
 ### Server Components vs Client Components
 
@@ -512,43 +513,43 @@ export default async function AdminLayout({ children }) {
 
 ---
 
-## 🧪 Testing
+## Testing
 
 ### Manual Testing Checklist
 
 #### Authentication
-- [ ] Can login with Google
-- [ ] Session persists after refresh
-- [ ] Can logout successfully
-- [ ] Redirects work correctly based on role
+- Can login with Google
+- Session persists after refresh
+- Can logout successfully
+- Redirects work correctly based on role
 
 #### Admin Functionality
-- [ ] Can create new entry
-- [ ] Can edit existing entry
-- [ ] Can delete entry
-- [ ] Changes reflect in real-time
-- [ ] Toast notifications appear
+- Can create new entry
+- Can edit existing entry
+- Can delete entry
+- Changes reflect in real-time
+- Toast notifications appear
 
 #### User Functionality
-- [ ] Can view all entries
-- [ ] Cannot edit or delete
-- [ ] Charts display correctly
-- [ ] Real-time updates work
+- Can view all entries
+- Cannot edit or delete
+- Charts display correctly
+- Real-time updates work
 
 #### Cross-Browser
-- [ ] Chrome
-- [ ] Firefox
-- [ ] Safari
-- [ ] Edge
+- Chrome
+- Firefox
+- Safari
+- Edge
 
 #### Responsive Design
-- [ ] Desktop (1920x1080)
-- [ ] Tablet (768x1024)
-- [ ] Mobile (375x667)
+- Desktop (1920x1080)
+- Tablet (768x1024)
+- Mobile (375x667)
 
 ---
 
-## 🔒 Security
+## Security
 
 ### Implemented Security Measures
 
@@ -579,7 +580,7 @@ export default async function AdminLayout({ children }) {
 
 ---
 
-## 🚢 Deployment
+## Deployment
 
 ### Deploy to Vercel (Recommended)
 
@@ -625,7 +626,7 @@ export default async function AdminLayout({ children }) {
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
@@ -649,16 +650,16 @@ export default async function AdminLayout({ children }) {
 
 ---
 
-## 📚 Additional Documentation
+## Additional Documentation
 
-- [`SETUP.md`](./SETUP.md) - Detailed setup instructions
-- [`IMPLEMENTATION.md`](./IMPLEMENTATION.md) - Implementation notes
-- [`shapes.md`](./shapes.md) - Shape specifications
+- [`SETUP.md`](./docs/SETUP.md) - Detailed setup instructions
+- [`IMPLEMENTATION.md`](./docs/IMPLEMENTATION.md) - Implementation notes
+- [`shapes.md`](./docs/shapes.md) - Shape specifications
 - [`docs/architecture.md`](./docs/architecture.md) - Architecture details
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 ### Development Workflow
 
@@ -697,28 +698,18 @@ export default async function AdminLayout({ children }) {
 
 ---
 
-## 📝 License
+## License
 
 This project is created for the ALPHV Intern Assessment.
 
 ---
 
-## 👥 Contact
+## Contact
 
-For questions or support, please contact the development team.
+For questions or support, please contact Tanwyhang.
 
----
 
-## 🙏 Acknowledgments
-
-- **Next.js Team** - Amazing React framework
-- **Supabase Team** - Excellent BaaS platform
-- **Shadcn** - Beautiful component library
-- **Vercel** - Seamless deployment platform
-
----
-
-**Built with ❤️ for ALPHV**
+**Built with care for ALPHV**
 
 ## Chart Color Configuration
 
@@ -775,10 +766,6 @@ Colors defined in `globals.css`:
 - [ ] Bulk operations
 - [ ] Activity logs
 - [ ] More chart types
-
-## License
-
-MIT
 
 ## Author
 

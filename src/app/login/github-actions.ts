@@ -9,7 +9,7 @@ export async function signInWithGithub(role: string) {
   const { data } = await supabase.auth.signInWithOAuth({
     provider: 'github',
     options: {
-      redirectTo: `http://localhost:3000/auth/callback?role=${role}`,
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback?role=${role}`,
     },
   })
 
